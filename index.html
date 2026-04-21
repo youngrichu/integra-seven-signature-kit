@@ -51,6 +51,92 @@
     .tip-box { background: var(--red-soft); border: 1px solid #f0c4cb; border-radius: 8px; padding: 13px 16px; font-size: 13px; color: var(--red-dark); margin-top: 22px; line-height: 1.65; }
     .tip-box strong { font-weight: 600; }
     .sig-render-pool { position: absolute; left: -9999px; top: 0; opacity: 0; pointer-events: none; background: #ffffff; }
+
+    /* ── Top nav ── */
+    .top-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 0;
+      padding: 0 40px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .nav-link {
+      display: inline-block;
+      padding: 14px 4px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--ink-mid);
+      text-decoration: none;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: color 0.15s, border-color 0.15s;
+      white-space: nowrap;
+    }
+    .nav-link:hover { color: var(--red); }
+    .nav-link.active { color: var(--red); border-bottom-color: var(--red); font-weight: 600; }
+    .nav-sep { width: 1px; height: 16px; background: var(--border); margin: 0 18px; flex-shrink: 0; }
+
+    /* ── Dropdown ── */
+    .nav-dropdown { position: relative; display: inline-flex; align-items: center; height: 100%; }
+    .nav-dropdown-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 14px 4px;
+      font-size: 13px;
+      font-weight: 500;
+      font-family: 'Sora', sans-serif;
+      color: var(--ink-mid);
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .nav-dropdown-btn:hover, .nav-dropdown-btn.active { color: var(--red); }
+    .nav-dropdown-btn.active { border-bottom-color: var(--red); font-weight: 600; }
+    .nav-dropdown-btn svg { transition: transform 0.2s; }
+    .nav-dropdown.open .nav-dropdown-btn svg { transform: rotate(180deg); }
+    .nav-dropdown-menu {
+      display: none;
+      position: absolute;
+      top: calc(100% + 1px);
+      left: 0;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      min-width: 220px;
+      z-index: 200;
+      overflow: hidden;
+    }
+    .nav-dropdown.open .nav-dropdown-menu { display: block; }
+    .nav-dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--ink-mid);
+      text-decoration: none;
+      transition: background 0.12s, color 0.12s;
+      cursor: pointer;
+      border: none;
+      background: none;
+      width: 100%;
+      font-family: 'Sora', sans-serif;
+      text-align: left;
+    }
+    .nav-dropdown-item:hover { background: var(--red-soft); color: var(--red); }
+    .nav-dropdown-item .di-icon { font-size: 15px; width: 20px; text-align: center; flex-shrink: 0; }
   </style>
 </head>
 <body>
@@ -63,12 +149,36 @@
   </div>
 </div>
 
+<nav class="top-nav">
+  <a class="nav-link active" href="#signatures">Signatures</a>
+  <span class="nav-sep"></span>
+  <div class="nav-dropdown" id="nav-dropdown">
+    <button class="nav-dropdown-btn" onclick="toggleDropdown()">
+      How to Add
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M2 4L6 8L10 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <div class="nav-dropdown-menu">
+      <button class="nav-dropdown-item" onclick="goToTab('outlook-web')">
+        <span class="di-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span> Outlook Web &amp; New App
+      </button>
+      <button class="nav-dropdown-item" onclick="goToTab('outlook-classic')">
+        <span class="di-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></span> Outlook Classic (Windows)
+      </button>
+      <button class="nav-dropdown-item" onclick="goToTab('apple-mail')">
+        <span class="di-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="2,4 12,13 22,4"/></svg></span> Apple Mail
+      </button>
+    </div>
+  </div>
+</nav>
+
 <div class="main">
 
-  <div class="section-label">Team Signatures</div>
+  <div class="section-label" id="signatures">Team Signatures</div>
   <div class="sig-grid" id="sig-grid"></div>
 
-  <div class="section-label" style="margin-top:52px;">How to Set Up Your Signature</div>
+  <div class="section-label" style="margin-top:52px;" id="setup">How to Set Up Your Signature</div>
   <div class="instructions-card">
 
     <div class="tabs">
@@ -300,8 +410,49 @@
     document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     document.getElementById('tab-' + id).classList.add('active');
-    btn.classList.add('active');
+    if (btn) btn.classList.add('active');
   }
+
+  function toggleDropdown() {
+    document.getElementById('nav-dropdown').classList.toggle('open');
+  }
+
+  function goToTab(id) {
+    // Switch tab
+    const tabMap = { 'outlook-web': 0, 'outlook-classic': 1, 'apple-mail': 2 };
+    switchTab(id, document.querySelectorAll('.tab-btn')[tabMap[id]]);
+    // Scroll to instructions
+    document.getElementById('setup').scrollIntoView({ behavior: 'smooth' });
+    // Close dropdown and mark active
+    const dd = document.getElementById('nav-dropdown');
+    dd.classList.remove('open');
+    dd.querySelector('.nav-dropdown-btn').classList.add('active');
+  }
+
+  // Close dropdown when clicking outside
+  document.addEventListener('click', e => {
+    const dd = document.getElementById('nav-dropdown');
+    if (!dd.contains(e.target)) dd.classList.remove('open');
+  });
+
+  // Highlight nav link based on scroll position
+  const navLinks = document.querySelectorAll('.nav-link');
+  window.addEventListener('scroll', () => {
+    const setup = document.getElementById('setup');
+    const atSetup = setup && window.scrollY + 80 >= setup.offsetTop;
+    navLinks.forEach(l => l.classList.remove('active'));
+    if (atSetup) {
+      // Highlight whichever email client tab is active
+      const activeTab = document.querySelector('.tab-btn.active');
+      const tabMap = { 'outlook-web': 1, 'outlook-classic': 2, 'apple-mail': 3 };
+      if (activeTab) {
+        const idx = Array.from(document.querySelectorAll('.tab-btn')).indexOf(activeTab);
+        if (navLinks[idx + 1]) navLinks[idx + 1].classList.add('active');
+      }
+    } else {
+      navLinks[0].classList.add('active');
+    }
+  }, { passive: true });
 </script>
 </body>
 </html>
