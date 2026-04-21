@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Integra Seven — Email Signature Kit</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --red: #c8102e; --red-dark: #a00d24; --red-soft: #fdf0f2;
+      --ink: #1a1a1a; --ink-mid: #555; --ink-light: #888;
+      --border: #e8e8e8; --surface: #f8f8f8; --white: #ffffff;
+      --radius: 10px; --shadow: 0 2px 16px rgba(0,0,0,0.08);
+    }
+    body { font-family: 'Sora', sans-serif; background: var(--surface); color: var(--ink); min-height: 100vh; }
+    .header { background: var(--white); border-bottom: 1px solid var(--border); padding: 28px 40px; display: flex; align-items: center; gap: 20px; }
+    .header img { width: 52px; height: 52px; object-fit: contain; }
+    .header-text h1 { font-size: 20px; font-weight: 700; color: var(--ink); letter-spacing: -0.3px; }
+    .header-text p { font-size: 13px; color: var(--ink-light); margin-top: 2px; font-weight: 400; }
+    .main { max-width: 1100px; margin: 0 auto; padding: 40px 24px 80px; }
+    .section-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px; color: var(--ink-light); margin-bottom: 16px; margin-top: 48px; display: flex; align-items: center; gap: 10px; }
+    .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    .section-label:first-child { margin-top: 0; }
+    .sig-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(460px, 1fr)); gap: 20px; }
+    .sig-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+    .sig-card-header { padding: 14px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .sig-card-header .person-info h3 { font-size: 14px; font-weight: 600; color: var(--ink); }
+    .sig-card-header .person-info span { font-size: 11px; color: var(--ink-light); font-weight: 400; display: block; margin-top: 1px; }
+    .copy-btn { background: var(--red); color: white; border: none; border-radius: 6px; padding: 8px 16px; font-size: 12px; font-weight: 600; font-family: 'Sora', sans-serif; cursor: pointer; transition: background 0.15s, transform 0.1s; white-space: nowrap; flex-shrink: 0; }
+    .copy-btn:hover { background: var(--red-dark); }
+    .copy-btn:active { transform: scale(0.97); }
+    .copy-btn.copied { background: #2e7d32; }
+    .sig-preview { padding: 24px 20px; overflow-x: auto; }
+    .instructions-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; margin-top: 20px; }
+    .tabs { display: flex; border-bottom: 1px solid var(--border); background: var(--surface); }
+    .tab-btn { padding: 14px 22px; font-size: 13px; font-weight: 500; font-family: 'Sora', sans-serif; color: var(--ink-mid); background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; margin-bottom: -1px; transition: color 0.15s, border-color 0.15s; }
+    .tab-btn:hover { color: var(--red); }
+    .tab-btn.active { color: var(--red); border-bottom-color: var(--red); font-weight: 600; }
+    .tab-panel { display: none; padding: 32px; }
+    .tab-panel.active { display: block; }
+    .tab-intro { font-size: 13px; color: var(--ink-mid); margin-bottom: 24px; line-height: 1.65; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 13px 16px; }
+    .steps { display: flex; flex-direction: column; }
+    .step { display: flex; gap: 18px; padding: 16px 0; border-bottom: 1px solid var(--border); }
+    .step:last-child { border-bottom: none; }
+    .step-num { width: 28px; height: 28px; min-width: 28px; border-radius: 50%; background: var(--red); color: white; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; margin-top: 1px; }
+    .step-body h4 { font-size: 14px; font-weight: 600; margin-bottom: 5px; color: var(--ink); }
+    .step-body p { font-size: 13px; color: var(--ink-mid); line-height: 1.65; }
+    .step-body code { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 2px 7px; font-size: 12px; font-family: 'Courier New', monospace; color: var(--red); }
+    .tip-box { background: var(--red-soft); border: 1px solid #f0c4cb; border-radius: 8px; padding: 13px 16px; font-size: 13px; color: var(--red-dark); margin-top: 22px; line-height: 1.65; }
+    .tip-box strong { font-weight: 600; }
+    .sig-render-pool { position: absolute; left: -9999px; top: 0; opacity: 0; pointer-events: none; background: #ffffff; }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <img src="https://res.cloudinary.com/dud5jjhfz/image/upload/intega7_logo_kntfvg.png" alt="Integra Seven">
+  <div class="header-text">
+    <h1>Email Signature Kit</h1>
+    <p>Integra Seven &mdash; All team signatures with setup instructions</p>
+  </div>
+</div>
+
+<div class="main">
+
+  <div class="section-label">Team Signatures</div>
+  <div class="sig-grid" id="sig-grid"></div>
+
+  <div class="section-label" style="margin-top:52px;">How to Set Up Your Signature</div>
+  <div class="instructions-card">
+
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('outlook-web', this)">Outlook Web &amp; New App</button>
+      <button class="tab-btn" onclick="switchTab('outlook-classic', this)">Outlook Classic (Windows)</button>
+      <button class="tab-btn" onclick="switchTab('apple-mail', this)">Apple Mail</button>
+    </div>
+
+    <div class="tab-panel active" id="tab-outlook-web">
+      <div class="tab-intro">
+        Applies to <strong>Outlook on the web</strong> (outlook.office.com) and the <strong>new Outlook desktop app</strong> for Windows. Both share the same settings interface, and signatures sync between them automatically (a restart of the desktop app may be needed to pull in changes made on the web).
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Copy your signature</h4>
+            <p>Click the <strong>Copy Signature</strong> button on your card above. This copies the fully rendered signature to your clipboard.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>Open Settings</h4>
+            <p>Click the <strong>gear icon</strong> in the top-right corner of Outlook to open the settings panel.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Go to Account &gt; Signatures</h4>
+            <p>In the settings panel, click <strong>Account</strong> in the left column, then click <strong>Signatures</strong>. Your existing signatures are listed here.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <h4>Add a new signature</h4>
+            <p>Click the <strong>+ Add signature</strong> button at the top right. Give it a name, e.g. <em>Integra Seven</em>.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <h4>Paste your signature</h4>
+            <p>Click inside the editor area below the name field. Press <code>Ctrl+A</code> to clear any existing content, then <code>Ctrl+V</code> to paste. The logo and all formatting will render immediately.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">6</div>
+          <div class="step-body">
+            <h4>Set as default and save</h4>
+            <p>Use the <strong>Default for new messages</strong> and <strong>Default for replies and forwards</strong> dropdowns at the top of the Signatures page to assign your signature. Click <strong>Save</strong>.</p>
+          </div>
+        </div>
+      </div>
+      <div class="tip-box"><strong>Tip:</strong> You can manage multiple signatures from the same Signatures page. Outlook Web now lets you set different default signatures for new messages vs. replies and forwards, so you can use the full signature for new emails and a shorter one for replies.</div>
+    </div>
+
+    <div class="tab-panel" id="tab-outlook-classic">
+      <div class="tab-intro">
+        Applies to <strong>Classic Outlook for Windows</strong> — the version with a ribbon toolbar and a <strong>File</strong> menu in the top-left corner. Its signature store is separate from Outlook Web and must be set up independently.
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Copy your signature</h4>
+            <p>Click the <strong>Copy Signature</strong> button on your card above.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>Open the Signatures dialog</h4>
+            <p>Go to <strong>File</strong> &gt; <strong>Options</strong> &gt; <strong>Mail</strong> &gt; <strong>Signatures...</strong> Alternatively, open a new email, click the <strong>Insert</strong> tab in the ribbon, then click <strong>Signature</strong> &gt; <strong>Signatures...</strong></p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Create a new signature</h4>
+            <p>Click <strong>New</strong>, type a name such as <em>Integra Seven</em>, and click <strong>OK</strong>. The new entry will appear in the list.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <h4>Paste into the editor</h4>
+            <p>Click inside the <strong>Edit signature</strong> area at the bottom of the dialog. Press <code>Ctrl+A</code> to clear it, then <code>Ctrl+V</code> to paste. The logo and formatting will render in the editor.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <h4>Assign as default and click OK</h4>
+            <p>In the <strong>Choose default signature</strong> area (top right of the dialog), select your email account and assign this signature to <strong>New messages</strong> and optionally <strong>Replies/Forwards</strong>. Click <strong>OK</strong>.</p>
+          </div>
+        </div>
+      </div>
+      <div class="tip-box"><strong>Classic vs New Outlook:</strong> Not sure which version you have? If you see a <strong>File</strong> menu in the top-left corner and a ribbon toolbar, you are on Classic. The new Outlook desktop app looks and works like the web version. They do not share signatures, so you need to set up separately in each if you use both.</div>
+    </div>
+
+    <div class="tab-panel" id="tab-apple-mail">
+      <div class="tab-intro">
+        Apple Mail does not support native HTML signature import. The most reliable approach is copying the rendered signature from <strong>Safari</strong> — other browsers may strip the formatting on paste, causing the logo and layout to break.
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Open this file in Safari</h4>
+            <p>If you are currently in Chrome or Firefox, copy the full URL from the address bar (it starts with <code>file:///</code>) and paste it into Safari's address bar.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>Copy your signature in Safari</h4>
+            <p>Click the <strong>Copy Signature</strong> button on your card. Safari preserves the rich HTML formatting that Apple Mail requires for the logo and layout to display correctly.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Open Mail Settings</h4>
+            <p>In Apple Mail, go to <strong>Mail</strong> &gt; <strong>Settings</strong> in the menu bar (on macOS Monterey and older, it is called <strong>Preferences</strong>). Click the <strong>Signatures</strong> tab.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <h4>Create a new signature</h4>
+            <p>Select your email account in the left column, then click the <code>+</code> button below the middle column. A new signature entry with a default placeholder will appear. Give it a name.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <h4>Uncheck "Always match my default message font"</h4>
+            <p>This checkbox appears below the signatures list. Make sure it is <strong>unchecked</strong> before pasting. If it is on, Mail will override the signature's typography with your default compose font.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">6</div>
+          <div class="step-body">
+            <h4>Paste your signature</h4>
+            <p>Click once inside the preview panel on the right side. Press <code>Cmd+A</code> to select the placeholder text, then <code>Cmd+V</code> to paste. The logo and formatted layout should appear.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">7</div>
+          <div class="step-body">
+            <h4>Assign to your account and close</h4>
+            <p>To make it the default, select your email account in the left column, then use the <strong>Choose Signature</strong> dropdown at the bottom of the panel to pick the new signature. Close Settings and you are done.</p>
+          </div>
+        </div>
+      </div>
+      <div class="tip-box"><strong>If the logo appears as a broken image:</strong> Apple Mail's privacy settings may be blocking external images. Go to <strong>Mail &gt; Settings &gt; Privacy</strong> and turn off <em>Protect Mail Activity</em>, then quit and reopen Mail. The logo is hosted on Cloudinary (a CDN) so it loads reliably once external content is allowed. You can re-enable the privacy setting after confirming the signature looks correct in a test email.</div>
+    </div>
+
+  </div>
+</div>
+
+<div class="sig-render-pool" id="render-pool"></div>
+
+<script>
+  const people = [
+    { id: 'natalia',  name: 'Natalia Sycheva',    title: 'Managing Director',               phone: '+ 971 55 8000 755', phoneTel: '+971558000755',  email: 'natalia.sycheva@integraseven.com' },
+    { id: 'david',    name: 'David Brazier',       title: 'Senior Director',                 phone: '+44 7789 355035',   phoneTel: '+447789355035',  email: 'david.brazier@integraseven.com'   },
+    { id: 'habtamu',  name: 'Habtamu Endalamaw',   title: 'IT Support Specialist',           phone: '+ 971 52 559 2976', phoneTel: '+971525592976',  email: 'digital@integraseven.com'         },
+    { id: 'rica',     name: 'Rica Valerio',         title: 'Business Operations Specialist',  phone: '+ 971 55 174 2677', phoneTel: '+971551742677',  email: 'rica.valerio@integraseven.com'    },
+    { id: 'support',  name: 'Support Department',   title: null, phone: null, phoneTel: null, email: 'info@integraseven.com'    },
+    { id: 'finance',  name: 'Finance Department',   title: null, phone: null, phoneTel: null, email: 'finance@integraseven.com' }
+  ];
+
+  function buildSig(p) {
+    const titleRow = p.title
+      ? `<tr><td style="font-size:12px;color:#888888;line-height:16px;padding-bottom:8px;">${p.title} &nbsp;|&nbsp; Integra Seven</td></tr>`
+      : `<tr><td style="font-size:12px;color:#888888;line-height:16px;padding-bottom:8px;">Integra Seven</td></tr>`;
+    const phoneRow = p.phone
+      ? `<tr><td style="padding-bottom:4px;"><table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td style="width:16px;padding-right:6px;vertical-align:middle;"><img src="https://res.cloudinary.com/dud5jjhfz/image/upload/phone_tv0fum.png" width="14" height="14" style="display:block;border:0;"></td><td style="font-size:12px;color:#444444;line-height:16px;"><a href="tel:${p.phoneTel}" style="color:#333333;text-decoration:none;">${p.phone}</a></td></tr></table></td></tr>`
+      : '';
+    return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#333333;max-width:500px;width:100%;background-color:transparent;"><tr><td valign="middle" align="center" style="padding-right:14px;width:90px;vertical-align:middle;"><a href="https://www.integraseven.com/" target="_blank" style="text-decoration:none;"><img src="https://res.cloudinary.com/dud5jjhfz/image/upload/intega7_logo_kntfvg.png" alt="Integra Seven" width="80" height="80" style="display:block;border:0;outline:none;"></a></td><td style="border-left:2px solid #cccccc;width:2px;font-size:0;line-height:0;">&nbsp;</td><td valign="middle" style="padding-left:14px;vertical-align:middle;"><table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;"><tr><td style="font-size:15px;font-weight:bold;color:#1a1a1a;line-height:18px;padding-bottom:2px;">${p.name}</td></tr>${titleRow}<tr><td style="border-top:1px solid #dddddd;font-size:0;line-height:0;padding-bottom:8px;">&nbsp;</td></tr>${phoneRow}<tr><td style="padding-bottom:4px;"><table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td style="width:16px;padding-right:6px;vertical-align:middle;"><img src="https://res.cloudinary.com/dud5jjhfz/image/upload/email_eogz7k.png" width="14" height="14" style="display:block;border:0;"></td><td style="font-size:12px;line-height:16px;"><a href="mailto:${p.email}" style="color:#0066cc;text-decoration:none;">${p.email}</a></td></tr></table></td></tr><tr><td style="padding-bottom:4px;"><table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td style="width:16px;padding-right:6px;vertical-align:middle;"><img src="https://res.cloudinary.com/dud5jjhfz/image/upload/globe_mj1dop.png" width="14" height="14" style="display:block;border:0;"></td><td style="font-size:12px;line-height:16px;"><a href="https://www.integraseven.com/" target="_blank" style="color:#0066cc;text-decoration:none;">www.integraseven.com</a></td></tr></table></td></tr><tr><td><table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td style="width:16px;padding-right:6px;vertical-align:middle;"><img src="https://res.cloudinary.com/dud5jjhfz/image/upload/marker_pfq08s.png" width="14" height="14" style="display:block;border:0;"></td><td style="font-size:12px;color:#666666;line-height:16px;">Meydan Grandstand, Dubai, UAE</td></tr></table></td></tr></table></td></tr><tr><td colspan="3" style="font-size:0;line-height:0;padding-top:10px;">&nbsp;</td></tr><tr><td colspan="3" style="border-top:1px solid #eeeeee;padding-top:8px;font-size:9px;color:#aaaaaa;line-height:14px;">This email and any attachments are confidential and intended solely for the use of the individual or entity to whom they are addressed. If you have received this email in error, please notify the sender immediately and delete it. Integra Seven accepts no liability for any damage caused by any virus transmitted by this email.</td></tr></table>`;
+  }
+
+  const grid = document.getElementById('sig-grid');
+  const pool = document.getElementById('render-pool');
+
+  people.forEach(p => {
+    const html = buildSig(p);
+    // Card
+    const card = document.createElement('div');
+    card.className = 'sig-card';
+    card.innerHTML = `<div class="sig-card-header"><div class="person-info"><h3>${p.name}</h3><span>${p.title ? p.title + ' &middot; ' : ''}${p.email}</span></div><button class="copy-btn" onclick="copySig('${p.id}', this)">Copy Signature</button></div><div class="sig-preview">${html}</div>`;
+    grid.appendChild(card);
+    // Hidden render target
+    const d = document.createElement('div');
+    d.id = 'render-' + p.id;
+    d.innerHTML = html;
+    pool.appendChild(d);
+  });
+
+  function copySig(id, btn) {
+    const el = document.getElementById('render-' + id);
+    const range = document.createRange();
+    range.selectNodeContents(el);
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+    let ok = false;
+    try { ok = document.execCommand('copy'); } catch(e) {}
+    sel.removeAllRanges();
+    if (ok) { flash(btn); return; }
+    // Modern API fallback
+    const blob = new Blob([el.innerHTML], { type: 'text/html' });
+    navigator.clipboard.write([new ClipboardItem({ 'text/html': blob })])
+      .then(() => flash(btn))
+      .catch(() => alert('Copy failed. Please try in a different browser.'));
+  }
+
+  function flash(btn) {
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy Signature'; btn.classList.remove('copied'); }, 2200);
+  }
+
+  function switchTab(id, btn) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + id).classList.add('active');
+    btn.classList.add('active');
+  }
+</script>
+</body>
+</html>
